@@ -7,6 +7,10 @@ import 'package:shelf/shelf.dart';
 
 /**
  * The local (i.e. client-side) instance of Shelf.
+ *
+ * Quite inexplicably, the History API does not provide an [onPush] event
+ * (that I know of). Local provides a [get] method to forces a call to the
+ * [_onWindowLocationChange] event handler.
  */
 class Local { // TODO: find a better name.
   dynamic _handler;
