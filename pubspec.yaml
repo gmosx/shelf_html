@@ -4,3 +4,5 @@ author: George Moschovitis
 description: An adapter for using Shelf to organize client-side applications.
 dependencies:
   shelf: any
+dev_dependencies:
+  shelf_route: any

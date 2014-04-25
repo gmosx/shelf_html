@@ -5,26 +5,28 @@ import 'dart:async';
 
 import 'package:shelf/shelf.dart';
 
-// TODO: find a better name.
-class Server {
+/**
+ * The local (i.e. client-side) instance of Shelf.
+ */
+class Local { // TODO: find a better name.
   dynamic _handler;
 
-  Server(this._handler);
+  Local(this._handler);
 
   void get(String path, {Map state: const {}, String title: ''}) {
     window.history.pushState(state, title, path);
-    process();
+    _onWindowLocationChange();
   }
 
-  // TODO: find a better name.
-  void process() {
-    final request = new Request('GET', new Uri(
-      scheme: 'http',
-      path: window.location.pathname));
+  void _onWindowLocationChange() {
+    final request = new Request('GET', new Uri(scheme: 'http', path: window.location.pathname));
     _handler(request).then((Response response) {
       switch (response.statusCode) {
-        // TODO: maybe use other 30x status?
+        // If the statusCode of the  response is 30x perform an 'internal redirect'
+        // by changing the window location.
         case 303:
+        case 302:
+        case 301:
           get(response.headers['location']);
           break;
       }
@@ -33,14 +35,17 @@ class Server {
 }
 
 /**
- *
+ * Implements the dart:html Shelf adapter.
  */
-Future<Server> serve(handler) {
-  final server = new Server(handler);
+Future<Local> serve(handler) {
+  final local = new Local(handler);
+
   window.onPopState.listen((PopStateEvent e) {
-    server.process();
+    local._onWindowLocationChange();
   });
-  // Process the initial url.
-  server.process();
-  return new Future.value(server);
+
+  // Handle the initial window location.
+  local._onWindowLocationChange();
+
+  return new Future.value(local);
 }
