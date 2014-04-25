@@ -1,0 +1,6 @@
+name: shelf_html
+version: 0.0.1
+author: George Moschovitis
+description: An adapter for using Shelf to organize client-side applications.
+dependencies:
+  shelf: any
