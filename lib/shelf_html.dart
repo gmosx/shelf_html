@@ -5,6 +5,7 @@ import 'dart:async';
 
 import 'package:shelf/shelf.dart';
 import 'package:shelf/src/util.dart';
+import 'package:stack_trace/stack_trace.dart';
 
 /**
  * The local (i.e. client-side) instance of Shelf.
@@ -13,10 +14,14 @@ class Local { // TODO: find a better name.
   dynamic _handler;
 
   Local(this._handler) {
-    window.onPopState.listen(_onWindowLocationChange);
+    catchTopLevelErrors(() {
+      window.onPopState.listen(_onWindowLocationChange);
 
-    // Handle the initial window location.
-    _onWindowLocationChange();
+      // Handle the initial window location.
+      _onWindowLocationChange();
+    }, (error, stackTrace) {
+      _logError("Asynchronous error\n$error", stackTrace);
+    });
   }
 
   /**
@@ -34,6 +39,9 @@ class Local { // TODO: find a better name.
   void _onWindowLocationChange([PopStateEvent e]) {
     final request = new Request('GET', new Uri(scheme: 'http', path: window.location.pathname));
     syncFuture(() => _handler(request)).then((Response response) {
+      if (response == null) {
+        response = _logError("Null response from handler");
+      }
       switch (response.statusCode) {
         // If the statusCode of the  response is 30x perform an 'internal redirect'
         // by changing the window location.
@@ -44,6 +52,21 @@ class Local { // TODO: find a better name.
           break;
       }
     });
+  }
+
+  Response _logError(String message, [StackTrace stackTrace]) {
+    var chain = new Chain.current();
+    if (stackTrace != null) {
+      chain = new Chain.forTrace(stackTrace);
+    }
+    chain = chain
+        .foldFrames((frame) => frame.isCore || frame.package == 'shelf')
+        .terse;
+
+    print('ERROR - ${new DateTime.now()}');
+    print(message);
+    print(chain);
+    return new Response.internalServerError();
   }
 }
 
