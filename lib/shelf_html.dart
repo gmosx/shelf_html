@@ -11,13 +11,8 @@ import 'package:shelf/shelf.dart';
 class Local { // TODO: find a better name.
   dynamic _handler;
 
-  // The window is injected to make the class testable through mocks.
-  Window _window;
-
-  Local(this._handler, [this._window]) {
-    if (_window == null) _window = window;
-
-    _window.onPopState.listen(_onWindowLocationChange);
+  Local(this._handler) {
+    window.onPopState.listen(_onWindowLocationChange);
 
     // Handle the initial window location.
     _onWindowLocationChange();
@@ -31,12 +26,12 @@ class Local { // TODO: find a better name.
    * [_onWindowLocationChange] event handler.
    */
   void go(String path, {Map state: const {}, String title: ''}) {
-    _window.history.pushState(state, title, path);
+    window.history.pushState(state, title, path);
     _onWindowLocationChange();
   }
 
   void _onWindowLocationChange([PopStateEvent e]) {
-    final request = new Request('GET', new Uri(scheme: 'http', path: _window.location.pathname));
+    final request = new Request('GET', new Uri(scheme: 'http', path: window.location.pathname));
     _handler(request).then((Response response) {
       switch (response.statusCode) {
         // If the statusCode of the  response is 30x perform an 'internal redirect'
@@ -54,6 +49,6 @@ class Local { // TODO: find a better name.
 /**
  * Implements the dart:html Shelf adapter.
  */
-Future<Local> serve(handler, [Window window]) {
-  return new Future.value(new Local(handler, window));
+Future<Local> serve(handler) {
+  return new Future.value(new Local(handler));
 }
