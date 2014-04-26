@@ -6,7 +6,7 @@ stoping you from using it at the client-side as well. This package provides
 an exterimentatl Shelf adapter to help you organize your frontend applications.
 
 You can reuse Shelf middleware (e.g. shelf_route) or create custom middleware
-for authentication and what else.
+for authentication and whatnot.
 
 
 Example usage
