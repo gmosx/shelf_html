@@ -4,6 +4,7 @@ import 'dart:html';
 import 'dart:async';
 
 import 'package:shelf/shelf.dart';
+import 'package:shelf/src/util.dart';
 
 /**
  * The local (i.e. client-side) instance of Shelf.
@@ -32,7 +33,7 @@ class Local { // TODO: find a better name.
 
   void _onWindowLocationChange([PopStateEvent e]) {
     final request = new Request('GET', new Uri(scheme: 'http', path: window.location.pathname));
-    _handler(request).then((Response response) {
+    syncFuture(() => _handler(request)).then((Response response) {
       switch (response.statusCode) {
         // If the statusCode of the  response is 30x perform an 'internal redirect'
         // by changing the window location.
