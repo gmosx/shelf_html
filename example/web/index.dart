@@ -9,7 +9,7 @@ Response helloHandler(request) {
   querySelector('#text').appendHtml('Hello <a id="link" href="/bye">bye</a><br/>');
   querySelector('#link').onClick.listen((e) {
     e.preventDefault();
-    local.get((e.target as AnchorElement).href);
+    local.go((e.target as AnchorElement).href);
   });
   return new Response.ok('');
 }
@@ -34,11 +34,11 @@ Response router(Request request) {
 }
 
 void main() {
-  final pipeline = const Pipeline()
+  final handler = const Pipeline()
       .addMiddleware(logRequests())
       .addHandler(router);
 
-  shelf_html.serve(pipeline).then((l) {
+  shelf_html.serve(handler).then((l) {
     local = l;
   });
 }

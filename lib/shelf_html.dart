@@ -7,23 +7,36 @@ import 'package:shelf/shelf.dart';
 
 /**
  * The local (i.e. client-side) instance of Shelf.
- *
- * Quite inexplicably, the History API does not provide an [onPush] event
- * (that I know of). Local provides a [get] method to forces a call to the
- * [_onWindowLocationChange] event handler.
  */
 class Local { // TODO: find a better name.
   dynamic _handler;
 
-  Local(this._handler);
+  // The window is injected to make the class testable through mocks.
+  Window _window;
 
-  void get(String path, {Map state: const {}, String title: ''}) {
-    window.history.pushState(state, title, path);
+  Local(this._handler, [this._window]) {
+    if (_window == null) _window = window;
+
+    _window.onPopState.listen(_onWindowLocationChange);
+
+    // Handle the initial window location.
     _onWindowLocationChange();
   }
 
-  void _onWindowLocationChange() {
-    final request = new Request('GET', new Uri(scheme: 'http', path: window.location.pathname));
+  /**
+   * Go (i.e. route) to the specified (internal) [path].
+   *
+   * Quite inexplicably, the History API does not provide an [onPush] event
+   * (that I know of). This method to forces a call to the
+   * [_onWindowLocationChange] event handler.
+   */
+  void go(String path, {Map state: const {}, String title: ''}) {
+    _window.history.pushState(state, title, path);
+    _onWindowLocationChange();
+  }
+
+  void _onWindowLocationChange([PopStateEvent e]) {
+    final request = new Request('GET', new Uri(scheme: 'http', path: _window.location.pathname));
     _handler(request).then((Response response) {
       switch (response.statusCode) {
         // If the statusCode of the  response is 30x perform an 'internal redirect'
@@ -31,7 +44,7 @@ class Local { // TODO: find a better name.
         case 303:
         case 302:
         case 301:
-          get(response.headers['location']);
+          go(response.headers['location']);
           break;
       }
     });
@@ -41,15 +54,6 @@ class Local { // TODO: find a better name.
 /**
  * Implements the dart:html Shelf adapter.
  */
-Future<Local> serve(handler) {
-  final local = new Local(handler);
-
-  window.onPopState.listen((PopStateEvent e) {
-    local._onWindowLocationChange();
-  });
-
-  // Handle the initial window location.
-  local._onWindowLocationChange();
-
-  return new Future.value(local);
+Future<Local> serve(handler, [Window window]) {
+  return new Future.value(new Local(handler, window));
 }
