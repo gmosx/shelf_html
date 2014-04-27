@@ -36,6 +36,11 @@ class Local { // TODO: find a better name.
     _onWindowLocationChange();
   }
 
+  /**
+   * Alias to be consistent with the HTTP oriented Shelf API.
+   */
+  void get(String path) => go(path);
+
   void _onWindowLocationChange([PopStateEvent e]) {
     final request = new Request('GET', new Uri(scheme: 'http', path: window.location.pathname));
     syncFuture(() => _handler(request)).then((Response response) {

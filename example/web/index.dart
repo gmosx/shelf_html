@@ -9,7 +9,7 @@ Response helloHandler(request) {
   querySelector('#text').appendHtml('Hello <a id="link" href="/bye">bye</a><br/>');
   querySelector('#link').onClick.listen((e) {
     e.preventDefault();
-    local.go((e.target as AnchorElement).href);
+    local.get((e.target as AnchorElement).href);
   });
   return new Response.ok('');
 }
