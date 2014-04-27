@@ -1,5 +1,5 @@
 name: shelf_html
-version: 0.1.0+1
+version: 0.2.0
 author: George Moschovitis <george.moschovitis@gmail.com>
 description: An adapter for using Shelf to organize client-side applications.
 homepage: https://github.com/gmosx/shelf_html
