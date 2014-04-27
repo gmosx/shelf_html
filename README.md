@@ -57,6 +57,9 @@ void main() {
 }
 ```
 
+For a more involved example that leverages shelf_route and Polymer, hava a look 
+[here](https://github.com/gmosx/shelf_html_example).
+
 
 Status
 ------
@@ -67,6 +70,7 @@ The API is not stable. The intend is to strictly follow Dart and Shelf conventio
 Links
 -----
 
+* [Shelf_html_example](https://github.com/gmosx/shelf_html_example)
 * [Shelf](http://pub.dartlang.org/packages/shelf)
 
 
