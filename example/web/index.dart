@@ -38,7 +38,5 @@ void main() {
       .addMiddleware(logRequests())
       .addHandler(router);
 
-  shelf_html.serve(handler).then((l) {
-    local = l;
-  });
+  local = shelf_html.serve(handler);
 }

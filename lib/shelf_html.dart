@@ -1,11 +1,12 @@
 library shelf_html;
 
 import 'dart:html';
-import 'dart:async';
 
 import 'package:shelf/shelf.dart';
 import 'package:shelf/src/util.dart';
 import 'package:stack_trace/stack_trace.dart';
+
+// TODO: add fine-grained logging.
 
 /**
  * The local (i.e. client-side) instance of Shelf.
@@ -68,6 +69,7 @@ class Local { // TODO: find a better name.
         .foldFrames((frame) => frame.isCore || frame.package == 'shelf')
         .terse;
 
+    // TODO: use the logging framework.
     print('ERROR - ${new DateTime.now()}');
     print(message);
     print(chain);
@@ -76,8 +78,8 @@ class Local { // TODO: find a better name.
 }
 
 /**
- * Implements the dart:html Shelf adapter.
+ * Implements the dart:html Shelf adapter entry-point.
  */
-Future<Local> serve(handler) {
-  return new Future.value(new Local(handler));
+Local serve(handler) {
+  return new Local(handler);
 }
