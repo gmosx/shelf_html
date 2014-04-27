@@ -32,7 +32,9 @@ class Local { // TODO: find a better name.
    * (that I know of). This method to forces a call to the
    * [_onWindowLocationChange] event handler.
    */
-  void go(String path, {Map state: const {}, String title: ''}) {
+  void go(String path, {Map state, String title: ''}) {
+    // TODO: use const map when dart2js bug is fixed (issue #1).
+    if (state == null) state = {};
     window.history.pushState(state, title, path);
     _onWindowLocationChange();
   }
