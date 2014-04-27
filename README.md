@@ -49,13 +49,11 @@ Response router(Request request) {
 }
 
 void main() {
-  final pipeline = const Pipeline()
+  final handler = const Pipeline()
       .addMiddleware(logRequests())
       .addHandler(router);
 
-  shelf_html.serve(pipeline).then((l) {
-    local = l;
-  });
+  local = shelf_html.serve(handler);
 }
 ```
 
