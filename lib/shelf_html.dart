@@ -49,7 +49,7 @@ class Local { // TODO: find a better name.
 
   void _onWindowLocationChange([PopStateEvent e]) {
     // Normalize the path by removing the [basePath] prefix.
-    final path = window.location.pathname.replaceFirst(new RegExp('^$basePath'), '');
+    final path = basePath == '' ? window.location.pathname : window.location.pathname.replaceFirst(new RegExp('^$basePath'), '');
 
     final request = new Request('GET', new Uri(scheme: 'http', path: path));
 
@@ -89,6 +89,6 @@ class Local { // TODO: find a better name.
 /**
  * Implements the dart:html Shelf adapter entry-point.
  */
-Local serve(handler, {String basePath}) {
+Local serve(handler, {String basePath: ''}) {
   return new Local(handler, basePath: basePath);
 }
