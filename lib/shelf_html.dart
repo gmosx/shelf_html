@@ -14,7 +14,10 @@ import 'package:stack_trace/stack_trace.dart';
 class Local { // TODO: find a better name.
   dynamic _handler;
 
-  Local(this._handler) {
+  /** A prefix prepended to all 'local' paths. */
+  String basePath;
+
+  Local(this._handler, {this.basePath: ''}) {
     catchTopLevelErrors(() {
       window.onPopState.listen(_onWindowLocationChange);
 
@@ -35,7 +38,7 @@ class Local { // TODO: find a better name.
   void go(String path, {Map state, String title: ''}) {
     // TODO: use const map when dart2js bug is fixed (issue #1).
     if (state == null) state = {};
-    window.history.pushState(state, title, path);
+    window.history.pushState(state, title, '$basePath$path');
     _onWindowLocationChange();
   }
 
@@ -45,7 +48,11 @@ class Local { // TODO: find a better name.
   void get(String path) => go(path);
 
   void _onWindowLocationChange([PopStateEvent e]) {
-    final request = new Request('GET', new Uri(scheme: 'http', path: window.location.pathname));
+    // Normalize the path by removing the [basePath] prefix.
+    final path = window.location.pathname.replaceFirst(new RegExp('^$basePath'), '');
+
+    final request = new Request('GET', new Uri(scheme: 'http', path: path));
+
     syncFuture(() => _handler(request)).then((Response response) {
       if (response == null) {
         response = _logError("Null response from handler");
@@ -82,6 +89,6 @@ class Local { // TODO: find a better name.
 /**
  * Implements the dart:html Shelf adapter entry-point.
  */
-Local serve(handler) {
-  return new Local(handler);
+Local serve(handler, {String basePath}) {
+  return new Local(handler, basePath: basePath);
 }

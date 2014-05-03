@@ -9,7 +9,8 @@ Response helloHandler(request) {
   querySelector('#text').appendHtml('Hello <a id="link" href="/bye">bye</a><br/>');
   querySelector('#link').onClick.listen((e) {
     e.preventDefault();
-    local.get((e.target as AnchorElement).href);
+//    local.get((e.target as AnchorElement).href);
+    local.get('/bye');
   });
   return new Response.ok('');
 }
@@ -38,5 +39,5 @@ void main() {
       .addMiddleware(logRequests())
       .addHandler(router);
 
-  local = shelf_html.serve(handler);
+  local = shelf_html.serve(handler, basePath: '/shelf_html/example/web');
 }
