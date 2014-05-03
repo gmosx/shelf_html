@@ -39,5 +39,9 @@ void main() {
       .addMiddleware(logRequests())
       .addHandler(router);
 
+  // Run from within Dart Editor.
   local = shelf_html.serve(handler, basePath: '/shelf_html/example/web');
+
+// Use the following line instead to run with 'pub serve'.
+//  local = shelf_html.serve(handler);
 }
